@@ -52,4 +52,4 @@ In the configuration file you can change database path and theme of the output d
 > - StyleColoredRedWhiteOnBlack
 > - StyleColoredYellowWhiteOnBlack
 > - StyleColoredBright
-> - StyleColoredDark
+> - StyleColoredDark <-- Default

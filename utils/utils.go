@@ -20,11 +20,11 @@ func EncodeString(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
 }
 
-func GetPwd() string {
-	ex, err := os.Executable()
+// Getting path to the executable file
+func GetExecPath() string {
+	exec_path, err := os.Executable()
 	if err != nil {
 		panic(err)
 	}
-	exPath := filepath.Dir(ex)
-	return exPath
+	return filepath.Dir(exec_path)
 }

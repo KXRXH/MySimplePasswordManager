@@ -12,8 +12,8 @@ type Config struct {
 
 func ParseJson(path string) Config {
 	content, err := ioutil.ReadFile(path)
-	// if we os.Open returns an error then handle it
 	if err != nil {
+		// Default settings
 		return Config{Theme: "StyleDefault", DbPath: "./pm"}
 	}
 

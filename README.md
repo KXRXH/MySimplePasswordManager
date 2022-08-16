@@ -7,19 +7,19 @@ Is is a simple password manager for your terminal with passwords decoding.
 > **add** "Key" "Value"  // Add new password to db
 >
 > ```sh
->password-manager -add "key" "password"
+>~ password-manager -add "key" "password"
 >```
 >
 > **get** "Key"  // Get password by the key
 >
 > ```sh
->password-manager -get "key"
+>~ password-manager -get "key"
 >```
 >
 > **keys**  // Get table of all keys with passwords
 >
 > ```sh
->password-manager -keys
+>~ password-manager -keys
 >```
 
 ## Configuration

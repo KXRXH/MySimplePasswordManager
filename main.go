@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/jedib0t/go-pretty/table"
+	"github.com/kxrxh/password-manager/constants"
 	"github.com/kxrxh/password-manager/database"
 	"github.com/kxrxh/password-manager/parser"
 	"github.com/kxrxh/password-manager/theme"
@@ -13,25 +14,12 @@ import (
 
 func main() {
 	var (
-		isAdd, isRead, isKeys bool
-		args                  []string
+		mode uint8
+		args []string
 	)
-	parser.Init(&isAdd, &isRead, &isKeys, &args)
-	// Check if params and args are correct
-	boolSum := utils.Bool2Int[isAdd] + utils.Bool2Int[isRead] + utils.Bool2Int[isKeys]
-	if boolSum > 1 || boolSum == 0 {
-		fmt.Println("error: cannot get more than one argument or do not get them at all")
-		fmt.Println("avaliable arguments:\n\t-add <key> <value>\n\t-read <key>\n\t-keys")
-		return
-	} else if isAdd && len(args) != 2 {
-		fmt.Printf("error: the following values are not valid: required 2, but got %d\n", len(args))
-		return
-	} else if isRead && len(args) != 1 {
-		fmt.Printf("error: the following values are not valid: required 1, but got %d\n", len(args))
-		return
-	}
-	if isAdd {
-		database.AddToDb(args[0], args[1])
+	err := parser.Init(&mode, &args)
+	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 	config := parser.ParseJson(utils.GetExecPath() + "/pm.json")
@@ -41,7 +29,19 @@ func main() {
 	outTable.SetStyle(theme.Theme[config.Theme])
 	outTable.SetOutputMirror(os.Stdout)
 
-	if isRead {
+	switch mode {
+	case constants.Add: // -add <key> <value>
+		if len(args) != 2 {
+			fmt.Printf("error: expected 2 arguments, got %d\n", len(args))
+		} else {
+			database.AddToDb(args[0], args[1])
+		}
+		return
+	case constants.Read: // -read <key>
+		if len(args) != 1 {
+			fmt.Printf("error: expected 1 arguments, got %d\n", len(args))
+			return
+		}
 		outTable.AppendHeader(table.Row{"Key", "Password"})
 		password, err := database.GetByKey(args[0])
 		if err != nil {
@@ -49,7 +49,7 @@ func main() {
 			return
 		}
 		outTable.AppendRow(table.Row{args[0], password})
-	} else if isKeys {
+	case constants.Keys: // -keys
 		outTable.AppendHeader(table.Row{"#", "Key", "Password"})
 		for i, field := range database.GetAllPassword() {
 			// Decoding password

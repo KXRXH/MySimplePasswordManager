@@ -4,11 +4,23 @@ Is is a simple password manager for your terminal with passwords decoding.
 
 ## Args
 
-> **-add** "Key" "Value"  // Add new password to db
+> **add** "Key" "Value"  // Add new password to db
 >
-> **-get** "Key"  // Get password by the key
+> ```sh
+>~ password-manager -add "key" "password"
+>```
 >
-> **-keys**  // Get table of all keys with passwords
+> **get** "Key"  // Get password by the key
+>
+> ```sh
+>~ password-manager -get "key"
+>```
+>
+> **keys**  // Get table of all keys with passwords
+>
+> ```sh
+>~ password-manager -keys
+>```
 
 ## Configuration
 

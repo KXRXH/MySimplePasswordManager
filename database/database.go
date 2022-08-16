@@ -1,9 +1,12 @@
 package database
 
 import (
+	"errors"
+
 	"github.com/kxrxh/password-manager/utils"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type PasswordField struct {
@@ -16,7 +19,7 @@ var db *gorm.DB
 
 func InitDb(path string) {
 	var err error
-	db, err = gorm.Open(sqlite.Open(path), &gorm.Config{})
+	db, err = gorm.Open(sqlite.Open(path), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
 	if err != nil {
 		panic(err)
 	}
@@ -28,14 +31,14 @@ func AddToDb(key string, value string) {
 	db.Create(&passwordField)
 }
 
-func GetByKey(key string) string {
-	var passField = PasswordField{Key: key}
-	db.First(&passField)
-	password, err := utils.DecodeString(passField.Password)
-	if err != nil {
-		panic(err)
+func GetByKey(key string) (string, error) {
+	var passField = PasswordField{}
+	db.Where("key = ?", key).Find(&passField)
+	if passField.Password == "" {
+		return "nil", errors.New("there are no keys with the given value")
 	}
-	return password
+	password, _ := utils.DecodeString(passField.Password)
+	return password, nil
 }
 
 func GetAllPassword() []PasswordField {

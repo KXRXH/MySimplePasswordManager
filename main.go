@@ -20,13 +20,14 @@ func main() {
 	// Check if params and args are correct
 	boolSum := utils.Bool2Int[isAdd] + utils.Bool2Int[isRead] + utils.Bool2Int[isKeys]
 	if boolSum > 1 || boolSum == 0 {
-		fmt.Println("Cannot get more than one argument at the same time or do not get them at all")
+		fmt.Println("error: cannot get more than one argument or do not get them at all")
+		fmt.Println("avaliable arguments:\n\t-add <key> <value>\n\t-read <key>\n\t-keys")
 		return
 	} else if isAdd && len(args) != 2 {
-		fmt.Printf("The following values are not valid: required 2, but got %d\n", len(args))
+		fmt.Printf("error: the following values are not valid: required 2, but got %d\n", len(args))
 		return
 	} else if isRead && len(args) != 1 {
-		fmt.Printf("The following values are not valid: required 1, but got %d\n", len(args))
+		fmt.Printf("error: the following values are not valid: required 1, but got %d\n", len(args))
 		return
 	}
 	if isAdd {
@@ -42,14 +43,20 @@ func main() {
 
 	if isRead {
 		outTable.AppendHeader(table.Row{"Key", "Password"})
-		outTable.AppendRow(table.Row{args[0], database.GetByKey(args[0])})
+		password, err := database.GetByKey(args[0])
+		if err != nil {
+			fmt.Printf("error: unable to find key with the given values: %v\n", args[0])
+			return
+		}
+		outTable.AppendRow(table.Row{args[0], password})
 	} else if isKeys {
 		outTable.AppendHeader(table.Row{"#", "Key", "Password"})
 		for i, field := range database.GetAllPassword() {
 			// Decoding password
 			password, err := utils.DecodeString(field.Password)
 			if err != nil {
-				panic(err)
+				fmt.Printf("error: unable to decode password: %v\n", err)
+				return
 			}
 			outTable.AppendRow(table.Row{i + 1, field.Key, password})
 		}

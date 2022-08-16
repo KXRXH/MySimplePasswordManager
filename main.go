@@ -26,7 +26,7 @@ func main() {
 		fmt.Printf("The following values are not valid: required 1, but got %d\n", len(values))
 		return
 	}
-	config := parser.ParseJson("./pm.json")
+	config := parser.ParseJson(utils.GetPwd() + "/pm.json")
 	database.InitDb(config.DbPath)
 	t := table.NewWriter()
 	t.SetStyle(theme.Theme[config.Theme])
